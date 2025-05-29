@@ -31,7 +31,7 @@ class Program
         for (int i = 0; i < samples.Count; i++)
         {
             var test = samples[i];
-            var train = samples;
+            var train = samples.Where((s, idx) => idx != i).ToList();
 
             var predicted = Classify(test, train, k);
             if (predicted == test.Label)
