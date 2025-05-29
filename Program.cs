@@ -19,11 +19,11 @@ class Program
             .Select(line => line.Split('\t'))
             .Select(parts => new IrisSample
             {
-                Features = parts.Take(4).Select(s => double.Parse(s)).ToArray(),
+                Features = parts.Take(4).Select(s => double.Parse(s, CultureInfo.InvariantCulture)).ToArray(),
                 Label = int.Parse(parts[4])
             }).ToList();
 
-
+        Normalize(samples);
 
         int correct = 0;
         int k = 3;
@@ -41,12 +41,23 @@ class Program
         Console.WriteLine($"Dokładność: {100.0 * correct / samples.Count:F2}%");
     }
 
-    static void Normalize(List<IrisSample> samples) { }
+    static void Normalize(List<IrisSample> samples)
+    {
+        int featureCount = samples[0].Features.Length;
+        for (int i = 0; i < featureCount; i++)
+        {
+            double min = samples.Min(s => s.Features[i]);
+            double max = samples.Max(s => s.Features[i]);
+
+            foreach (var s in samples)
+            {
+                s.Features[i] = (s.Features[i] - min) / (max - min);
+            }
+        }
+    }
 
     static int Classify(IrisSample test, List<IrisSample> train, int k)
     {
         return train.First().Label;
     }
-
-
 }
