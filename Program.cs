@@ -58,6 +58,24 @@ class Program
 
     static int Classify(IrisSample test, List<IrisSample> train, int k)
     {
-        return train.First().Label;
+        var neighbors = train
+            .Select(s => new
+            {
+                Label = s.Label,
+                Distance = EuclideanDistance(test.Features, s.Features)
+            })
+            .OrderBy(x => x.Distance)
+            .Take(k)
+            .GroupBy(x => x.Label)
+            .OrderByDescending(g => g.Count())
+            .First()
+            .Key;
+
+        return neighbors;
+    }
+
+    static double EuclideanDistance(double[] a, double[] b)
+    {
+        return Math.Sqrt(a.Zip(b, (x, y) => Math.Pow(x - y, 2)).Sum());
     }
 }
