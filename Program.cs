@@ -69,7 +69,20 @@ class Program
 
     static int Classify(IrisSample test, List<IrisSample> train, int k, DistanceMetric metric)
     {
-        return train.First().Label;
+        var neighbors = train
+            .Select(s => new
+            {
+                Label = s.Label,
+                Distance = GetDistance(test.Features, s.Features, metric)
+            })
+            .OrderBy(x => x.Distance)
+            .Take(k)
+            .GroupBy(x => x.Label)
+            .OrderByDescending(g => g.Count())
+            .First()
+            .Key;
+
+        return neighbors;
     }
 
     static double GetDistance(double[] a, double[] b, DistanceMetric metric)
