@@ -4,6 +4,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
+enum DistanceMetric
+{
+    Euclidean,
+    Manhattan,
+    Chebyshev
+}
+
 class IrisSample
 {
     public double[] Features;
@@ -28,12 +35,14 @@ class Program
         int correct = 0;
         int k = 3;
 
+        DistanceMetric metric = DistanceMetric.Euclidean;
+
         for (int i = 0; i < samples.Count; i++)
         {
             var test = samples[i];
             var train = samples.Where((s, idx) => idx != i).ToList();
 
-            var predicted = Classify(test, train, k);
+            var predicted = Classify(test, train, k, metric);
             if (predicted == test.Label)
                 correct++;
         }
@@ -56,26 +65,8 @@ class Program
         }
     }
 
-    static int Classify(IrisSample test, List<IrisSample> train, int k)
+    static int Classify(IrisSample test, List<IrisSample> train, int k, DistanceMetric metric)
     {
-        var neighbors = train
-            .Select(s => new
-            {
-                Label = s.Label,
-                Distance = EuclideanDistance(test.Features, s.Features)
-            })
-            .OrderBy(x => x.Distance)
-            .Take(k)
-            .GroupBy(x => x.Label)
-            .OrderByDescending(g => g.Count())
-            .First()
-            .Key;
-
-        return neighbors;
-    }
-
-    static double EuclideanDistance(double[] a, double[] b)
-    {
-        return Math.Sqrt(a.Zip(b, (x, y) => Math.Pow(x - y, 2)).Sum());
+        return train.First().Label;
     }
 }
