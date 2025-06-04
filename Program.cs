@@ -32,10 +32,12 @@ class Program
 
         Normalize(samples);
 
+        Console.WriteLine("Wybierz metrykę (0 = Euklidesowa, 1 = Manhattan, 2 = Chebyshev): ");
+        int choice = int.Parse(Console.ReadLine());
+        DistanceMetric metric = (DistanceMetric)choice;
+
         int correct = 0;
         int k = 3;
-
-        DistanceMetric metric = DistanceMetric.Euclidean;
 
         for (int i = 0; i < samples.Count; i++)
         {
