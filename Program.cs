@@ -71,4 +71,17 @@ class Program
     {
         return train.First().Label;
     }
+
+    static double GetDistance(double[] a, double[] b, DistanceMetric metric)
+    {
+        switch (metric)
+        {
+            case DistanceMetric.Manhattan:
+                return a.Zip(b, (x, y) => Math.Abs(x - y)).Sum();
+            case DistanceMetric.Chebyshev:
+                return a.Zip(b, (x, y) => Math.Abs(x - y)).Max();
+            default:
+                return Math.Sqrt(a.Zip(b, (x, y) => Math.Pow(x - y, 2)).Sum());
+        }
+    }
 }
